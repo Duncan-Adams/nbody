@@ -1,0 +1,5 @@
+COMPILER = clang
+CFLAGS = -Wall
+
+.gitignore
+!cc = |> $(COMPILER) $(CFLAGS) -c %f -o %o |> %B.o

@@ -1,69 +1,35 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <math.h>
-#include <SDL2/SDL.h>
-#include <SDL2/SDL2_gfxPrimitives.h>
-
-const double G = 6.67408e-11;
-
-typedef struct _vec {
-	double x;
-	double y;
-} Vector;
-
-typedef struct _body {
-	Vector r;
-	Vector v;
-	Vector a;
-	
-	double m;
-	double radius;
-	
-} Body;
+#include "include.h"
+#include "integrator.h"
 
 int WinMain(){
 	main(0, NULL);
+}	
+	
+void orbit(Body *b1, Body *b2, double a, double e, double w) {
+	Vector P; /* location of periapsis */
+	Vector v; /* orbital velocity */
+	double vmag;
+	double h; /* specific angular momentum */
+	double y; /* angle between (1-e)*a and v */
+	
+	if(e < 0 || e >= 1)
+		return;
+	
+	P.x = b1->r.x + (1 - e)*a*cos(w);
+	P.y = b1->r.y + (1 - e)*a*sin(w);
+	
+	h = sqrt(a*(1 - e*e)*G*(b1->m + b2->m));
+	
+	vmag = sqrt(((1 + e)*G*b1->m)/((1 - e)*a));
+	
+	y = asin((1-e)*a * vmag/h);
+	
+	v.x = vmag * cos(y);
+	v.y = vmag * sin(y);
+	
+	b2->v = v;
+	b2->r = P;
 }
-
-void acceleration(Body *b1, Body *b2) {
-	double mag = 0.0;
-	long double theta = 0.0;
-	Vector f;
-	Vector distance;
-	double g = 0.0;
-	double r = 0.0;
-	
-	distance.x = b2->r.x - b1->r.x;
-	distance.y = b2->r.y - b1->r.y;
-	
-	r = hypot(distance.x, distance.y);
-	
-	g = (r * r * r)/G; /* inverse of G over r cubed */
-	
-	b1->a.x += b2->m*distance.x/g;
-	b1->a.y += b2->m*distance.y/g;
-									
-	b2->a.x -= b1->m*distance.x/g;
-	b2->a.y -= b1->m*distance.y/g;
-
-}
-
-void integrate(Body* list, int n, double dt) {
-	int i = 0;
-	
-	if(n <= 0) return;
-	
-	for(i = 0; i < n; i++) {
-		list[i].r.x += list[i].v.x * dt + .5 * list[i].a.x * (dt * dt);
-		list[i].r.y += list[i].v.y * dt + .5 * list[i].a.y * (dt * dt);
-		
-		list[i].v.x += list[i].a.x * dt;
-		list[i].v.y += list[i].a.y * dt;
-	
-	}
-}
-	
-	
 
 
 int main(int argc, char** argv) {
@@ -76,33 +42,29 @@ int main(int argc, char** argv) {
 	SDL_SetRenderDrawColor(ren, 0, 0, 0, 255);
 	
 	
-	int nbodies = 3;
+	int nbodies = 2;
 	
 	Body* body_list = malloc(sizeof(Body) * nbodies);
 	
-	Body b1, b2, b3;
+	Body b1, b2;
 	
-	b1.r = (Vector){800, 450};
+	b1.r = (Vector){1100, 750};
 	b1.v = (Vector){0, 0};
 	b1.a = (Vector){0, 0};
 	b1.m = 5.97e16;
 	b1.radius = 10;
 	
-	b2.r = (Vector){800, 600};
-	b2.v = (Vector){162.93, 0};
+	b2.r = (Vector){1100 + 100, 750};
+	b2.v = (Vector){0, 0};
 	b2.a = (Vector){0, 0};
-	b2.m = 1e13;
-	b2.radius = 10;
-	
-	b3.r = (Vector){929.9038, 525};
-	b3.v = (Vector){81.48, -141.13};
-	b3.a = (Vector){0, 0};
-	b3.m = 1;
-	b3.radius = 10;
+	b2.m = 1;
+	b2.radius = 4;
+	b2.m = 10;
+
+	orbit(&b1, &b2, 30, 0, 0);
 	
 	body_list[0] = b1;
 	body_list[1] = b2;
-	body_list[2] = b3;
 	
 	Uint32 sim_time = 0;
 	Uint32 real_time = 0;
@@ -111,7 +73,7 @@ int main(int argc, char** argv) {
 	int i = 0;
 	int j = 0;
 	
-	double dt = .001;
+	double dt = .001; 
 	double f = 0.0;
 	
 	while(1) {
@@ -141,14 +103,14 @@ int main(int argc, char** argv) {
 			}
 			
 			integrate(body_list, nbodies, dt);
-
+		
 		}
 			
 			SDL_SetRenderDrawColor(ren, 0, 0, 0, 255);
 			SDL_RenderClear(ren);
 			
 			for(i = 0; i < nbodies; i++) {
-				filledCircleRGBA(ren, body_list[i].r.x, body_list[i].r.y, 10, 170, 0, 0, 255);
+				filledCircleRGBA(ren, body_list[i].r.x, body_list[i].r.y, body_list[i].radius, 170, 0, 0, 255);
 			}
 			
 			SDL_RenderPresent(ren);
