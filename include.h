@@ -24,5 +24,11 @@ typedef struct _body {
 	
 } Body;
 
+typedef struct _camera {
+	Vector center;
+	double zoom; 
+
+} camera;
+
 
 #endif

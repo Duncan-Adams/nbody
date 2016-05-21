@@ -1,5 +1,6 @@
 #include "include.h"
 #include "integrator.h"
+#include "render.h"
 
 int WinMain(){
 	main(0, NULL);
@@ -31,40 +32,46 @@ void orbit(Body *b1, Body *b2, double a, double e, double w) {
 	b2->r = P;
 }
 
+extern SDL_Window* win;
+extern SDL_Renderer* ren;
 
 int main(int argc, char** argv) {
 	
 	if(SDL_Init(SDL_INIT_EVERYTHING) != 0) return 0;
 	
-	SDL_Window* win = SDL_CreateWindow("N-Body", SDL_WINDOWPOS_CENTERED,  SDL_WINDOWPOS_CENTERED, 800, 450, 0);
-	SDL_Renderer* ren = SDL_CreateRenderer(win, -1, SDL_RENDERER_ACCELERATED);
+	win = SDL_CreateWindow("N-Body", SDL_WINDOWPOS_CENTERED,  SDL_WINDOWPOS_CENTERED, 800, 450, 0);
+	ren = SDL_CreateRenderer(win, -1, SDL_RENDERER_ACCELERATED);
 	SDL_RenderSetLogicalSize(ren, 1600, 900);
 	SDL_SetRenderDrawColor(ren, 0, 0, 0, 255);
 	
 	
-	int nbodies = 2;
+	int nbodies = 1;
 	
 	Body* body_list = malloc(sizeof(Body) * nbodies);
 	
 	Body b1, b2;
 	
-	b1.r = (Vector){1100, 750};
+	b1.r = (Vector){0, 0};
 	b1.v = (Vector){0, 0};
 	b1.a = (Vector){0, 0};
 	b1.m = 5.97e16;
 	b1.radius = 10;
 	
-	b2.r = (Vector){1100 + 100, 750};
-	b2.v = (Vector){0, 0};
-	b2.a = (Vector){0, 0};
-	b2.m = 1;
-	b2.radius = 4;
-	b2.m = 10;
-
-	orbit(&b1, &b2, 30, 0, 0);
+	//~ b2.r = (Vector){1100 + 100, 750};
+	//~ b2.v = (Vector){0, 0};
+	//~ b2.a = (Vector){0, 0};
+	//~ b2.m = 1;
+	//~ b2.radius = 4;
+	//~ b2.m = 10;
+//~ 
+	//~ orbit(&b1, &b2, 30, 0, 0);
+	
+	camera c;
+	c.center.x = 0;
+	c.center.y = 0;
 	
 	body_list[0] = b1;
-	body_list[1] = b2;
+	//~ body_list[1] = b2;
 	
 	Uint32 sim_time = 0;
 	Uint32 real_time = 0;
@@ -106,14 +113,7 @@ int main(int argc, char** argv) {
 		
 		}
 			
-			SDL_SetRenderDrawColor(ren, 0, 0, 0, 255);
-			SDL_RenderClear(ren);
-			
-			for(i = 0; i < nbodies; i++) {
-				filledCircleRGBA(ren, body_list[i].r.x, body_list[i].r.y, body_list[i].radius, 170, 0, 0, 255);
-			}
-			
-			SDL_RenderPresent(ren);
+			render(body_list, nbodies, c);
 		
 }
 

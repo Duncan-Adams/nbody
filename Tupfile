@@ -1,11 +1,11 @@
 include_rules
 
 
-: ./integrator.c |> |> {cfiles}
+: foreach *.c |> |> {cfiles}
 
 : foreach {cfiles} |> $(COMPILER) $(CFLAGS) -g -c %f -o %o |> %B.o {objs}
 
-: main.c {objs} |> clang -g %f -lsdl2 -lSDL2_gfx -onbody |> nbody
+: {objs} |> clang -g %f -lsdl2 -lSDL2_gfx -onbody |> nbody
 
 
 
