@@ -45,11 +45,11 @@ int main(int argc, char** argv) {
 	SDL_SetRenderDrawColor(ren, 0, 0, 0, 255);
 	
 	
-	int nbodies = 1;
+	int nbodies = 4;
 	
 	Body* body_list = malloc(sizeof(Body) * nbodies);
 	
-	Body b1, b2;
+	Body b1, b2, b3, b4;
 	
 	b1.r = (Vector){0, 0};
 	b1.v = (Vector){0, 0};
@@ -57,31 +57,42 @@ int main(int argc, char** argv) {
 	b1.m = 5.97e16;
 	b1.radius = 10;
 	
-	//~ b2.r = (Vector){1100 + 100, 750};
-	//~ b2.v = (Vector){0, 0};
-	//~ b2.a = (Vector){0, 0};
-	//~ b2.m = 1;
-	//~ b2.radius = 4;
-	//~ b2.m = 10;
-//~ 
-	//~ orbit(&b1, &b2, 30, 0, 0);
+	b2.r = (Vector){100, 0};
+	b2.v = (Vector){0, 0};
+	b2.a = (Vector){0, 0};
+	b2.m = 1e9;
+	b2.radius = 8;
+
+	orbit(&b1, &b2, 100, 0, 0);
+	
+	b3.r = (Vector){50, 86.6025};
+	b3.v = (Vector){-172.8484, 99.794};
+	b3.a = (Vector){0, 0};
+	b3.m = 1;
+	b3.radius = 4;
+
+	
+	b4.r = (Vector){50, -86.6025};
+	b4.v = (Vector){172.8484, 99.794};
+	b4.a = (Vector){0, 0};
+	b4.m = 1;
+	b4.radius = 4;
+
 	
 	camera c;
 	c.center.x = 0;
 	c.center.y = 0;
 	
 	body_list[0] = b1;
-	//~ body_list[1] = b2;
+	body_list[1] = b2;
+	body_list[2] = b3;
+	body_list[3] = b4;
 	
 	Uint32 sim_time = 0;
 	Uint32 real_time = 0;
-
 	
-	int i = 0;
-	int j = 0;
-	
-	double dt = .001; 
-	double f = 0.0;
+	/* call acceleration here to initiliaze the integrator with */
+	acceleration(body_list, nbodies);
 	
 	while(1) {
 		
@@ -96,29 +107,18 @@ int main(int argc, char** argv) {
 				}
 			}
 			
-			sim_time += dt * 1000;
-			
-			for(i = 0; i < nbodies; i++) {
-				body_list[i].a.x = 0.0;
-				body_list[i].a.y = 0.0;
-			}
-			
-			for(i = 0; i < nbodies; i++) {
-				for(j = i + 1; j < nbodies; j++) {
-					acceleration(&body_list[i], &body_list[j]);
-				}
-			}
-			
-			integrate(body_list, nbodies, dt);
+			sim_time += DT * 1000;
+		
+			integrate(body_list, nbodies, DT);
 		
 		}
 			
 			render(body_list, nbodies, c);
-		
 }
 
+
+
 	free(body_list);
-	
 	
 	SDL_DestroyRenderer(ren);
 	SDL_DestroyWindow(win);

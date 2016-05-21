@@ -3,8 +3,8 @@
 
 #include "include.h"
 
-void acceleration(Body *b1, Body *b2);
+void acceleration(Body* list, int n);
 
-void integrate(Body* list, int n, double dt);
+void integrate(Body* list, int n, double dt); /* intgeration using leapfrog method */
 
 #endif

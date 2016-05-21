@@ -7,7 +7,8 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL2_gfxPrimitives.h>
 
-#define G 6.67408e-11
+#define G (double)6.67408e-11
+#define DT (double).001
 
 typedef struct _vec {
 	double x;

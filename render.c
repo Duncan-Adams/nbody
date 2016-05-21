@@ -18,11 +18,11 @@ void render(Body* list, int n, camera c) {
 		/* transform camera coords into screen space */
 		
 		screen_coord.x = cam_coord.x + 800;
-		screen_coord.y = cam_coord.y + 450;
+		screen_coord.y = 450 - cam_coord.y;
 		
 		/* render */
 		
-		filledCircleRGBA(ren, screen_coord.x, screen_coord.y, 10, 170, 0, 0, 255);
+		filledCircleRGBA(ren, screen_coord.x, screen_coord.y, list[i].radius, 170, 0, 0, 255);
 	}
 	
 	SDL_RenderPresent(ren);

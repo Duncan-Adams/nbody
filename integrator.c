@@ -1,6 +1,6 @@
 #include "integrator.h"
 
-void acceleration(Body *b1, Body *b2) {
+static void acceleration_helper(Body *b1, Body *b2) {
 	Vector distance;
 	double g = 0.0;
 	double r = 0.0;
@@ -20,17 +20,42 @@ void acceleration(Body *b1, Body *b2) {
 
 }
 
+void acceleration(Body* list, int n) {
+	int i;
+	int j;
+	
+	for(i = 0; i < n; i++) {
+		list[i].a.x = 0.0;
+		list[i].a.y = 0.0;
+	}
+	
+	for(i = 0; i < n; i++) {
+		for(j = i + 1; j < n; j++) {
+			acceleration_helper(&list[i], &list[j]);				
+		}
+	}
+}
+
+/* integration using leapfrog method */
 
 void integrate(Body* list, int n, double dt) {
 	int i = 0;
 	
 	if(n <= 0) return;
+
 	
 	for(i = 0; i < n; i++) {
-		list[i].r.x += list[i].v.x * dt + .5 * list[i].a.x * (dt * dt);
-		list[i].r.y += list[i].v.y * dt + .5 * list[i].a.y * (dt * dt);
+		list[i].v.x += .5*DT * list[i].a.x;
+		list[i].v.y += .5*DT * list[i].a.y;
 		
-		list[i].v.x += list[i].a.x * dt;
-		list[i].v.y += list[i].a.y * dt;
+		list[i].r.x += DT * list[i].v.x;
+		list[i].r.y += DT * list[i].v.y;
+	}
+	
+	acceleration(list, n);
+	
+	for(i = 0; i < n; i++) {
+		list[i].v.x += .5*DT * list[i].a.x;
+		list[i].v.y += .5*DT * list[i].a.y;
 	}
 }
