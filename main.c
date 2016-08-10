@@ -45,11 +45,11 @@ int main(int argc, char** argv) {
 	SDL_SetRenderDrawColor(ren, 0, 0, 0, 255);
 	
 	
-	int nbodies = 4;
+	int nbodies = 6;
 	
 	Body* body_list = malloc(sizeof(Body) * nbodies);
 	
-	Body b1, b2, b3, b4;
+	Body b1, b2, b3, b4, b5, b6;
 	
 	b1.r = (Vector){0, 0};
 	b1.v = (Vector){0, 0};
@@ -77,22 +77,39 @@ int main(int argc, char** argv) {
 	b4.a = (Vector){0, 0};
 	b4.m = 1;
 	b4.radius = 4;
-
 	
-	camera c;
-	c.center.x = 0;
-	c.center.y = 0;
+	b5.r = (Vector){100, 300};
+	b5.v = (Vector){-20, 0};
+	b5.a = (Vector){0, 0};
+	b5.m = 1e16;
+	b5.radius = 12;
+	
+	b6.r = (Vector){-500, -360};
+	b6.v = (Vector){0, 40};
+	b6.a = (Vector){0, 0};
+	b6.m = 3e15;
+	b6.radius = 8;
 	
 	body_list[0] = b1;
 	body_list[1] = b2;
 	body_list[2] = b3;
 	body_list[3] = b4;
+	body_list[4] = b5;
+	body_list[5] = b6;
 	
 	Uint32 sim_time = 0;
 	Uint32 real_time = 0;
 	
 	/* call acceleration here to initiliaze the integrator with */
 	acceleration(body_list, nbodies);
+	
+	int follow = 0;
+	
+	camera c;
+	c.center.x = 0;
+	c.center.y = 0;
+	
+	Vector cam_pos = c.center;
 	
 	while(1) {
 		
@@ -105,12 +122,26 @@ int main(int argc, char** argv) {
 				if(e.type == SDL_QUIT) {
 					break;
 				}
+				
+				if(e.type == SDL_MOUSEBUTTONDOWN) {
+					follow += 1;
+					if(follow > nbodies) {
+						follow = 0;
+					}
+				}
 			}
 			
 			sim_time += DT * 1000;
 		
 			integrate(body_list, nbodies, DT);
-		
+			
+			if(follow > 0) {
+				c.center.x = body_list[follow - 1].r.x;
+				c.center.y = body_list[follow - 1].r.y;
+			} else {
+				c.center = cam_pos;
+			}
+	
 		}
 			
 			render(body_list, nbodies, c);
