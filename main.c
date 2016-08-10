@@ -32,6 +32,33 @@ void orbit(Body *b1, Body *b2, double a, double e, double w) {
 	b2->r = P;
 }
 
+
+
+Body* body_list;
+int nbodies;
+
+void read_cfg(char *path) {
+	int i = 0;
+	
+	FILE *z = fopen(path, "r");
+	if(!z) exit(EXIT_FAILURE);
+	
+	fscanf(z, "nbodies:%d\n", &nbodies);
+	
+	body_list = malloc(sizeof(Body) * nbodies);
+	
+	for(i = 0; i < nbodies; i++) {
+		fscanf(z, "[BODY]\n");
+		fscanf(z, "pos=<%lf,%lf>\n", &body_list[i].r.x, &body_list[i].r.y);
+		fscanf(z, "vel=<%lf,%lf>\n", &body_list[i].v.x, &body_list[i].v.y);
+		fscanf(z, "mass=%lf\n", &body_list[i].m);
+	}
+	
+	fclose(z);
+	
+	
+}
+
 extern SDL_Window* win;
 extern SDL_Renderer* ren;
 
@@ -44,58 +71,8 @@ int main(int argc, char** argv) {
 	SDL_RenderSetLogicalSize(ren, 1600, 900);
 	SDL_SetRenderDrawColor(ren, 0, 0, 0, 255);
 	
-	
-	int nbodies = 6;
-	
-	Body* body_list = malloc(sizeof(Body) * nbodies);
-	
-	Body b1, b2, b3, b4, b5, b6;
-	
-	b1.r = (Vector){0, 0};
-	b1.v = (Vector){0, 0};
-	b1.a = (Vector){0, 0};
-	b1.m = 5.97e16;
-	b1.radius = 10;
-	
-	b2.r = (Vector){100, 0};
-	b2.v = (Vector){0, 0};
-	b2.a = (Vector){0, 0};
-	b2.m = 1e9;
-	b2.radius = 8;
+	read_cfg("./cfg.txt");
 
-	orbit(&b1, &b2, 100, 0, 0);
-	
-	b3.r = (Vector){50, 86.6025};
-	b3.v = (Vector){-172.8484, 99.794};
-	b3.a = (Vector){0, 0};
-	b3.m = 1;
-	b3.radius = 4;
-
-	
-	b4.r = (Vector){50, -86.6025};
-	b4.v = (Vector){172.8484, 99.794};
-	b4.a = (Vector){0, 0};
-	b4.m = 1;
-	b4.radius = 4;
-	
-	b5.r = (Vector){100, 300};
-	b5.v = (Vector){-20, 0};
-	b5.a = (Vector){0, 0};
-	b5.m = 1e16;
-	b5.radius = 12;
-	
-	b6.r = (Vector){-500, -360};
-	b6.v = (Vector){0, 40};
-	b6.a = (Vector){0, 0};
-	b6.m = 3e15;
-	b6.radius = 8;
-	
-	body_list[0] = b1;
-	body_list[1] = b2;
-	body_list[2] = b3;
-	body_list[3] = b4;
-	body_list[4] = b5;
-	body_list[5] = b6;
 	
 	Uint32 sim_time = 0;
 	Uint32 real_time = 0;

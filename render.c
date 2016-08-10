@@ -22,7 +22,7 @@ void render(Body* list, int n, camera c) {
 		
 		/* render */
 		
-		filledCircleRGBA(ren, screen_coord.x, screen_coord.y, list[i].radius, 170, 0, 0, 255);
+		filledCircleRGBA(ren, screen_coord.x, screen_coord.y, .2*log(list[i].m) + 5, 170, 0, 0, 255);
 	}
 	
 	SDL_RenderPresent(ren);

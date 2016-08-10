@@ -1,0 +1,9 @@
+nbodies:2
+[BODY]
+pos=<0,0>
+vel=<0,0>
+mass=5.97e16
+[BODY]
+pos=<100,0>
+vel=<0,150>
+mass=1e9
