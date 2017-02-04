@@ -7,7 +7,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL2_gfxPrimitives.h>
 
-#define G (double)6.67408e-11
+#define G (double)1.0
 #define DT (double).001
 
 typedef struct _vec {
@@ -22,6 +22,8 @@ typedef struct _body {
 	
 	double m;
 	double radius;
+	
+	uint32_t color;
 	
 } Body;
 

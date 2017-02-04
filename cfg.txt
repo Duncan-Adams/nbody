@@ -2,8 +2,10 @@ nbodies:2
 [BODY]
 pos=<0,0>
 vel=<0,0>
-mass=5.97e16
+mass=5.97e6
+color=red
 [BODY]
 pos=<100,0>
-vel=<0,150>
-mass=1e9
+vel=<0,230>
+mass=10000
+color=blue

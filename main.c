@@ -1,66 +1,32 @@
 #include "include.h"
 #include "integrator.h"
 #include "render.h"
-
-int WinMain(){
-	main(0, NULL);
-}	
-	
-void orbit(Body *b1, Body *b2, double a, double e, double w) {
-	Vector P; /* location of periapsis */
-	Vector v; /* orbital velocity */
-	double vmag;
-	double h; /* specific angular momentum */
-	double y; /* angle between (1-e)*a and v */
-	
-	if(e < 0 || e >= 1)
-		return;
-	
-	P.x = b1->r.x + (1 - e)*a*cos(w);
-	P.y = b1->r.y + (1 - e)*a*sin(w);
-	
-	h = sqrt(a*(1 - e*e)*G*(b1->m + b2->m));
-	
-	vmag = sqrt(((1 + e)*G*b1->m)/((1 - e)*a));
-	
-	y = asin((1-e)*a * vmag/h);
-	
-	v.x = vmag * cos(y);
-	v.y = vmag * sin(y);
-	
-	b2->v = v;
-	b2->r = P;
-}
+#include "config.h"
+#include "input.h"
 
 
+	
 
 Body* body_list;
 int nbodies;
 
-void read_cfg(char *path) {
-	int i = 0;
-	
-	FILE *z = fopen(path, "r");
-	if(!z) exit(EXIT_FAILURE);
-	
-	fscanf(z, "nbodies:%d\n", &nbodies);
-	
-	body_list = malloc(sizeof(Body) * nbodies);
-	
-	for(i = 0; i < nbodies; i++) {
-		fscanf(z, "[BODY]\n");
-		fscanf(z, "pos=<%lf,%lf>\n", &body_list[i].r.x, &body_list[i].r.y);
-		fscanf(z, "vel=<%lf,%lf>\n", &body_list[i].v.x, &body_list[i].v.y);
-		fscanf(z, "mass=%lf\n", &body_list[i].m);
-	}
-	
-	fclose(z);
-	
-	
-}
+uint8_t running = 1;
+int follow = 0;
+
 
 extern SDL_Window* win;
 extern SDL_Renderer* ren;
+
+void manage_input(SDL_Event *e, Vector *c) {
+	if(e->key.keysym.sym == SDLK_DOWN)
+		c->y += 10;
+	if(e->key.keysym.sym == SDLK_UP)
+		c->y -= 10;
+	if(e->key.keysym.sym == SDLK_RIGHT)
+		c->x += 10;
+	if(e->key.keysym.sym == SDLK_LEFT)
+		c->x -= 10;
+}
 
 int main(int argc, char** argv) {
 	
@@ -80,33 +46,20 @@ int main(int argc, char** argv) {
 	/* call acceleration here to initiliaze the integrator with */
 	acceleration(body_list, nbodies);
 	
-	int follow = 0;
-	
 	camera c;
 	c.center.x = 0;
 	c.center.y = 0;
 	
 	Vector cam_pos = c.center;
 	
-	while(1) {
+	while(running) {
 		
 		real_time = SDL_GetTicks();
 		
 		while(sim_time < real_time) {
 		
-			SDL_Event e;
-			if (SDL_PollEvent(&e)) {
-				if(e.type == SDL_QUIT) {
-					break;
-				}
-				
-				if(e.type == SDL_MOUSEBUTTONDOWN) {
-					follow += 1;
-					if(follow > nbodies) {
-						follow = 0;
-					}
-				}
-			}
+			keyboard_input();
+			handle_input(&cam_pos);
 			
 			sim_time += DT * 1000;
 		
@@ -135,4 +88,8 @@ int main(int argc, char** argv) {
 	
 	return 0;	
 }
+
+int WinMain(){
+	return main(0, NULL);
+}	
 	

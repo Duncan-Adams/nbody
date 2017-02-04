@@ -5,7 +5,7 @@ include_rules
 
 : foreach {cfiles} |> $(COMPILER) $(CFLAGS) -g -c %f -o %o |> %B.o {objs}
 
-: {objs} |> clang -g %f -lsdl2 -lSDL2_gfx -onbody |> nbody
+: {objs} |> clang -g %f -lSDL2 -lm -lSDL2_gfx -onbody |> nbody
 
 
 
