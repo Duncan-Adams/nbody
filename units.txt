@@ -1,0 +1,3 @@
+We choose G to be 1, Mass to be in KG and our time to be 1 second of simulation = 1 week
+This leaves us with a distance unit of 7151.676 km per pixel, and sets the speed of light at c=2.537E10 pixels per real second.
+To get a sense for how far apart things are in the real life solar system, earth would be around 21 million pixels away from the sun in this simulator.

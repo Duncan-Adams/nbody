@@ -11,11 +11,11 @@ extern Body* body_list;
 
 static uint32_t string_color(char *s) {
 	if (strcmp(s, "red") == 0)
-		return 0x990000ff;
+		return 0xff000099;
 	if (strcmp(s, "blue") == 0)
-		return 0x191970ff;
+		return 0xff701919;
 	if (strcmp(s, "green") == 0)
-		return 0x008000ff;
+		return 0xff008000;
 		
 	return 0x990000ff;
 }
@@ -37,7 +37,9 @@ void read_cfg(char *path) {
 		fscanf(z, "pos=<%lf,%lf>\n", &body_list[i].r.x, &body_list[i].r.y);
 		fscanf(z, "vel=<%lf,%lf>\n", &body_list[i].v.x, &body_list[i].v.y);
 		fscanf(z, "mass=%lf\n", &body_list[i].m);
+		fscanf(z, "track=%d\n", &body_list[i].track);
 		fscanf(z, "color=%s\n", color);
+		
 		
 		color[31] = '\0';
 		body_list[i].color = string_color(color);
